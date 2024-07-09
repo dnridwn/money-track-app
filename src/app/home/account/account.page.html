@@ -1,0 +1,156 @@
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Account</ion-title>
+    </ion-toolbar>
+    <ion-toolbar class="ion-padding-start ion-padding-end">
+      <ion-segment [(ngModel)]="activeSegment">
+        <ion-segment-button [value]="SEGMENT.ACCOUNT">
+          <ion-label>Account</ion-label>
+        </ion-segment-button>
+        <ion-segment-button [value]="SEGMENT.DEBT">
+          <ion-label>Debt</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </ion-toolbar>
+    <ion-toolbar>
+      <ion-searchbar [(ngModel)]="keyword" (ionInput)="search()" [debounce]="500"></ion-searchbar>
+    </ion-toolbar>
+  </ion-header>
+
+  <ng-container *ngIf="activeSegment === SEGMENT.ACCOUNT">
+    <ion-grid>
+      <ng-container *ngFor="let account of defaultAccounts">
+        <ion-row>
+          <ion-col>
+            <ion-card class="ion-no-margin ion-margin-start ion-margin-end" (click)="openEditAccountModal(account)">
+              <ion-card-header>
+                <ion-card-title class="text-wrap">{{ account.name }}</ion-card-title>
+                <ion-card-subtitle>{{ account.balance_formatted }}</ion-card-subtitle>
+              </ion-card-header>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+      </ng-container>
+    </ion-grid>
+  </ng-container>
+
+  <ng-container *ngIf="activeSegment === SEGMENT.DEBT">
+    <ion-grid>
+      <ng-container *ngFor="let account of debtAccounts">
+        <ion-row>
+          <ion-col>
+            <ion-card class="ion-no-margin ion-margin-start ion-margin-end" (click)="openEditAccountModal(account)">
+              <ion-card-header>
+                <ion-card-title class="text-wrap">{{ account.name }}</ion-card-title>
+                <ion-card-subtitle>{{ account.balance_formatted }}</ion-card-subtitle>
+              </ion-card-header>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+      </ng-container>
+    </ion-grid>
+  </ng-container>
+
+  <ion-fab vertical="bottom" horizontal="end">
+    <ion-fab-button (click)="openCreateAccountModal()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <ion-modal [isOpen]="isCreateAccountModalOpen" (didDismiss)="closeCreateAccountModal()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button (click)="closeCreateAccountModal()" [disabled]="isCreatingAccount">Cancel</ion-button>
+          </ion-buttons>
+          <ion-title>Create Account</ion-title>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <ion-list>
+          <ion-item>
+            <ion-input type="text" label="Name" placeholder="type here..." [(ngModel)]="activeAccount.name"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-textarea label="Description" placeholder="type here..." [rows]="4" [(ngModel)]="activeAccount.description"></ion-textarea>
+          </ion-item>
+          <ion-item>
+            <ion-select label="Type" placeholder="Select" [(ngModel)]="activeAccount.type">
+              <ion-select-option value="Account">Account</ion-select-option>
+              <ion-select-option value="Debt">Debt</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-item>
+            <ion-input type="number" label="Balance" placeholder="type here..." [(ngModel)]="activeAccount.balance"></ion-input>
+          </ion-item>
+        </ion-list>
+
+        <div class="ion-padding modal-button-container">
+          <ion-button expand="block" color="success" (click)="createAccount(activeAccount)">
+            <ng-container *ngIf="!isCreatingAccount; else creatingLoader">
+              <span style="color: #fff;">Save</span>
+            </ng-container>
+            <ng-template #creatingLoader>
+              <ion-spinner name="dots"></ion-spinner>
+            </ng-template>
+          </ion-button>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <ion-modal [isOpen]="isEditAccountModalOpen" (didDismiss)="closeEditAccountModal()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button (click)="closeEditAccountModal()">Cancel</ion-button>
+          </ion-buttons>
+          <ion-title>Edit Account</ion-title>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <ion-list>
+          <ion-item>
+            <ion-input type="text" label="Name" placeholder="type here..." [(ngModel)]="activeAccount.name"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-textarea label="Description" placeholder="type here..." [rows]="4" [(ngModel)]="activeAccount.description"></ion-textarea>
+          </ion-item>
+          <ion-item>
+            <ion-select label="Type" placeholder="Select" [(ngModel)]="activeAccount.type">
+              <ion-select-option value="Account">Account</ion-select-option>
+              <ion-select-option value="Debt">Debt</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-item>
+            <ion-input type="number" label="Balance" placeholder="type here..." [(ngModel)]="activeAccount.balance"></ion-input>
+          </ion-item>
+        </ion-list>
+
+        <div class="ion-padding modal-button-container">
+          <div class="flex w-100">
+            <ion-button class="flex-1" expand="block" color="success" (click)="editAccount(activeAccount)">
+              <ng-container *ngIf="!isEditingAccount; else editingLoader">
+                <span style="color: #fff;">Save</span>
+              </ng-container>
+              <ng-template #editingLoader>
+                <ion-spinner name="dots"></ion-spinner>
+              </ng-template>
+            </ion-button>
+            <ion-button class="flex-1" expand="block" color="danger" (click)="deleteAccount(activeAccount)">
+              <ng-container *ngIf="!isDeletingAccount; else editingLoader">
+                <span style="color: #fff;">Delete</span>
+              </ng-container>
+              <ng-template #editingLoader>
+                <ion-spinner name="dots"></ion-spinner>
+              </ng-template>
+            </ion-button>
+          </div>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</ion-content>

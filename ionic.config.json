@@ -1,0 +1,7 @@
+{
+  "name": "Money Track",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

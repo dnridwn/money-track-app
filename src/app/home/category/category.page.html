@@ -1,0 +1,154 @@
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Category</ion-title>
+    </ion-toolbar>
+    <ion-toolbar class="ion-padding-start ion-padding-end">
+      <ion-segment [(ngModel)]="activeSegment">
+        <ion-segment-button [value]="SEGMENT.INCOME">
+          <ion-label>Income</ion-label>
+        </ion-segment-button>
+        <ion-segment-button [value]="SEGMENT.EXPENSE">
+          <ion-label>Expense</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </ion-toolbar>
+    <ion-toolbar>
+      <ion-searchbar [(ngModel)]="keyword" (ionInput)="search()" [debounce]="500"></ion-searchbar>
+    </ion-toolbar>
+  </ion-header>
+
+  <ng-container *ngIf="activeSegment === SEGMENT.INCOME">
+    <ion-grid>
+      <ng-container *ngFor="let categories of incomeCategories">
+        <ion-row>
+          <ng-container *ngFor="let category of categories; let i = index">
+            <ion-col size="6">
+              <ion-card class="ion-no-margin" [class]="{'ion-margin-start': i % 2 == 0, 'ion-margin-end': i % 2 == 1}" (click)="openEditCategoryModal(category)">
+                <ion-card-header>
+                  <ion-card-title class="text-wrap">{{ category.name }}</ion-card-title>
+                  <ion-card-subtitle>0</ion-card-subtitle>
+                </ion-card-header>
+              </ion-card>
+            </ion-col>
+          </ng-container>
+        </ion-row>
+      </ng-container>
+    </ion-grid>
+  </ng-container>
+
+  <ng-container *ngIf="activeSegment === SEGMENT.EXPENSE">
+    <ion-grid>
+      <ng-container *ngFor="let categories of expenseCategories">
+        <ion-row>
+          <ng-container *ngFor="let category of categories; let i = index">
+            <ion-col size="6">
+              <ion-card class="ion-no-margin" [class]="{'ion-margin-start': i % 2 == 0, 'ion-margin-end': i % 2 == 1}" (click)="openEditCategoryModal(category)">
+                <ion-card-header>
+                  <ion-card-title class="text-wrap">{{ category.name }}</ion-card-title>
+                  <ion-card-subtitle>0</ion-card-subtitle>
+                </ion-card-header>
+              </ion-card>
+            </ion-col>
+          </ng-container>
+        </ion-row>
+      </ng-container>
+    </ion-grid> 
+  </ng-container>
+
+  <ion-fab vertical="bottom" horizontal="end">
+    <ion-fab-button (click)="openCreateCategoryModal()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <ion-modal [isOpen]="isCreateCategoryModalOpen" (didDismiss)="closeCreateCategoryModal()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button (click)="closeCreateCategoryModal()">Cancel</ion-button>
+          </ion-buttons>
+          <ion-title>Create Category</ion-title>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <ion-list>
+          <ion-item>
+            <ion-input type="text" label="Name" placeholder="type here..." [(ngModel)]="activeCategory.name"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-textarea label="Description" placeholder="type here..." [rows]="4" [(ngModel)]="activeCategory.description"></ion-textarea>
+          </ion-item>
+          <ion-item>
+            <ion-select label="Type" placeholder="Select" [(ngModel)]="activeCategory.type">
+              <ion-select-option value="Income">Income</ion-select-option>
+              <ion-select-option value="Expense">Expense</ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-list>
+
+        <div class="ion-padding modal-button-container">
+          <ion-button expand="block" color="success" (click)="createCategory(activeCategory)">
+            <ng-container *ngIf="!isCreatingCategory; else creatingLoader">
+              <span style="color: #fff;">Save</span>
+            </ng-container>
+            <ng-template #creatingLoader>
+              <ion-spinner name="dots"></ion-spinner>
+            </ng-template>
+          </ion-button>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <ion-modal [isOpen]="isEditCategoryModalOpen" (didDismiss)="closeEditCategoryModal()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button (click)="closeEditCategoryModal()">Cancel</ion-button>
+          </ion-buttons>
+          <ion-title>Edit Category</ion-title>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <ion-list>
+          <ion-item>
+            <ion-input type="text" label="Name" placeholder="type here..." [(ngModel)]="activeCategory.name"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-textarea label="Description" placeholder="type here..." [rows]="4" [(ngModel)]="activeCategory.description"></ion-textarea>
+          </ion-item>
+          <ion-item>
+            <ion-select label="Type" placeholder="Select" [(ngModel)]="activeCategory.type">
+              <ion-select-option value="Income">Income</ion-select-option>
+              <ion-select-option value="Expense">Expense</ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-list>
+
+        <div class="ion-padding modal-button-container">
+          <div class="flex w-100">
+            <ion-button class="flex-1" expand="block" color="success" (click)="editCategory(activeCategory)">
+              <ng-container *ngIf="!isEditingCategory; else creatingLoader">
+                <span style="color: #fff;">Save</span>
+              </ng-container>
+              <ng-template #creatingLoader>
+                <ion-spinner name="dots"></ion-spinner>
+              </ng-template>
+            </ion-button>
+            <ion-button class="flex-1" expand="block" color="danger" (click)="deleteCategory(activeCategory)">
+              <ng-container *ngIf="!isDeletingCategory; else editingLoader">
+                <span style="color: #fff;">Delete</span>
+              </ng-container>
+              <ng-template #editingLoader>
+                <ion-spinner name="dots"></ion-spinner>
+              </ng-template>
+            </ion-button>
+          </div>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</ion-content>
