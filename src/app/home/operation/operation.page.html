@@ -15,16 +15,16 @@
       <ion-item>
         <div class="flex w-100">
           <div class="flex-1">
-            <ng-container *ngIf="transaction.type == 'Transfer'">
+            <ng-container *ngIf="transaction.type === TYPE_TRANSFER">
               <h6 class="text-wrap">{{ transaction?.transfer_to_account?.name || 'N/A' }}</h6>
             </ng-container>
-            <ng-container *ngIf="transaction.type != 'Transfer'">
+            <ng-container *ngIf="transaction.type !== TYPE_TRANSFER">
               <h6 class="text-wrap">{{ transaction?.category?.name || 'N/A' }}</h6>
             </ng-container>
             <p class="ion-no-margin ion-margin-top ion-margin-bottom text-wrap">{{ transaction.note || 'N/A' }}</p>
           </div>
           <div class="flex-1 text-right">
-            <h6 class="text-red">{{ transaction.total_amount_formatted }}</h6>
+            <h6 [class]="{'text-red': transaction.type === TYPE_CREDIT, 'text-green': transaction.type === TYPE_DEBIT, 'text-gray': transaction.type === TYPE_TRANSFER}">{{ transaction.total_amount_formatted }}</h6>
             <p class="ion-no-margin ion-margin-top ion-margin-bottom">{{ transaction.date_formatted }}</p>
           </div>
         </div>
@@ -32,13 +32,7 @@
     </ng-container>
   </ion-list>
 
-  <ion-fab vertical="bottom" horizontal="end">
-    <ion-fab-button (click)="openCreateOperationModal()">
-      <ion-icon name="add"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
-
-  <ion-modal [isOpen]="isCreateOperationModalOpen" [breakpoints]="[0, .5, .75, 1]" [initialBreakpoint]=".5" (didDismiss)="closeCreateOperationModal()">
+  <ion-modal [isOpen]="isCreateOperationModalOpen" (didDismiss)="closeCreateOperationModal()">
     <ng-template>
       <ion-header>
         <ion-toolbar>
@@ -47,137 +41,152 @@
           </ion-buttons>
           <ion-title>Create Operation</ion-title>
         </ion-toolbar>
-        <ion-toolbar>
-          <ion-segment [(ngModel)]="activeSegment">
-            <ion-segment-button [value]="SEGMENT.INCOME">Income</ion-segment-button>
-            <ion-segment-button [value]="SEGMENT.EXPENSE">Expense</ion-segment-button>
-            <ion-segment-button [value]="SEGMENT.TRANSFER">Transfer</ion-segment-button>
-          </ion-segment>
-        </ion-toolbar>
       </ion-header>
       <ion-content>
-        <ng-container *ngIf="activeSegment === SEGMENT.INCOME">
-          <ion-grid>
-            <ng-container *ngFor="let categories of incomeCategories">
-              <ion-row>
-                <ng-container *ngFor="let category of categories">
-                  <ion-col [size]="6">
-                    <ion-card class="ion-no-margin" (click)="openCreateOperationDetailModal()">
-                      <ion-card-header>
-                        <ion-card-title class="text-wrap">{{ category.name }}</ion-card-title>
-                        <ion-card-subtitle>0</ion-card-subtitle>
-                      </ion-card-header>
-                    </ion-card>
-                  </ion-col>
+        <ion-list>
+          <ion-item>
+            <ion-label>Date</ion-label>
+            <ion-datetime-button datetime="date"></ion-datetime-button>
+            <ion-popover [keepContentsMounted]="true">
+              <ng-template>
+                <ion-datetime id="date" presentation="date" [(ngModel)]="newTransaction.date"></ion-datetime>
+              </ng-template>
+            </ion-popover>
+          </ion-item>
+          <ion-item>
+            <ion-select label="Type" placeholder="Choose type" [(ngModel)]="newTransaction.type">
+              <ion-select-option [value]="TYPE_DEBIT">{{ TYPE_DEBIT }}</ion-select-option>
+              <ion-select-option [value]="TYPE_CREDIT">{{ TYPE_CREDIT }}</ion-select-option>
+              <ion-select-option [value]="TYPE_TRANSFER">{{ TYPE_TRANSFER }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-item>
+            <ion-select label="Account" placeholder="Choose account" [(ngModel)]="newTransaction.account_id">
+              <ng-container *ngFor="let account of accounts">
+                <ion-select-option [value]="account.id">{{ account.name }}</ion-select-option>
+              </ng-container>
+            </ion-select>
+          </ion-item>
+          <ng-container *ngIf="newTransaction.type === TYPE_DEBIT">
+            <ion-item>
+              <ion-select label="Category" placeholder="Choose category" [(ngModel)]="newTransaction.category_id">
+                <ng-container *ngFor="let category of incomeCategories">
+                  <ion-select-option [value]="category.id">{{ category.name }}</ion-select-option>
                 </ng-container>
-              </ion-row>
-            </ng-container>
-          </ion-grid>
-        </ng-container>
-        <ng-container *ngIf="activeSegment === SEGMENT.EXPENSE">
-          <ion-grid>
-            <ng-container *ngFor="let categories of expenseCategories">
-              <ion-row>
-                <ng-container *ngFor="let category of categories">
-                  <ion-col [size]="6">
-                    <ion-card class="ion-no-margin" (click)="openCreateOperationDetailModal()">
-                      <ion-card-header>
-                        <ion-card-title class="text-wrap">{{ category.name }}</ion-card-title>
-                        <ion-card-subtitle>0</ion-card-subtitle>
-                      </ion-card-header>
-                    </ion-card>
-                  </ion-col>
+              </ion-select>
+            </ion-item>
+          </ng-container>
+          <ng-container *ngIf="newTransaction.type === TYPE_CREDIT">
+            <ion-item>
+              <ion-select label="Category" placeholder="Choose category" [(ngModel)]="newTransaction.category_id">
+                <ng-container *ngFor="let category of expenseCategories">
+                  <ion-select-option [value]="category.id">{{ category.name }}</ion-select-option>
                 </ng-container>
-              </ion-row>
-            </ng-container>
-          </ion-grid>
-        </ng-container>
-        <ng-container *ngIf="activeSegment === SEGMENT.TRANSFER">
-          <ion-grid>
-            <ng-container *ngFor="let subAccounts of accounts">
-              <ion-row>
-                <ng-container *ngFor="let account of subAccounts">
-                  <ion-col [size]="6">
-                    <ion-card class="ion-no-margin" (click)="openCreateOperationDetailModal()">
-                      <ion-card-header>
-                        <ion-card-title class="text-wrap">{{ account.name }}</ion-card-title>
-                        <ion-card-subtitle>{{ account.balance_formatted }}</ion-card-subtitle>
-                      </ion-card-header>
-                    </ion-card>
-                  </ion-col>
+              </ion-select>
+            </ion-item>
+          </ng-container>
+          <ng-container *ngIf="newTransaction.type === TYPE_TRANSFER">
+            <ion-item>
+              <ion-select label="Transfer to Account" placeholder="Choose account" [(ngModel)]="newTransaction.transfer_to_account_id">
+                <ng-container *ngFor="let account of accounts">
+                  <ion-select-option [value]="account.id">{{ account.name }}</ion-select-option>
                 </ng-container>
-              </ion-row>
+              </ion-select>
+            </ion-item>
+          </ng-container>
+          <ion-item>
+            <ion-input type="number" label="Amount" [(ngModel)]="newTransaction.amount"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-textarea label="Note" [(ngModel)]="newTransaction.note" [rows]="4"></ion-textarea>
+          </ion-item>
+          <ion-item lines="none">
+            <ion-label>Fee(s)</ion-label>
+            <ion-button (click)="openCreateFeeModal()" color="light">
+              <ion-icon slot="icon-only" name="add"></ion-icon>
+            </ion-button>
+          </ion-item>
+          <ng-container *ngFor="let fee of newTransaction.fees">
+            <ion-item>
+              <div class="flex w-100">
+                <div class="flex-1">
+                  <ion-label>{{ fee.type }}</ion-label>
+                </div>
+                <div class="flex-1 text-right">
+                  <ion-label>
+                    <span [class]="{'text-red': fee.operation === OPERATION_TYPE_DEDUCT, 'text-green': fee.operation === OPERATION_TYPE_INDUCT}">
+                      {{ fee.operation === OPERATION_TYPE_DEDUCT ? '-' : '+' }} {{ fee.amount }} {{ fee.format === FORMAT_PERCENT ? '%' : '' }}
+                    </span>
+                  </ion-label>
+                </div>
+              </div>
+            </ion-item>
+          </ng-container>
+        </ion-list>
+
+        <div class="ion-padding modal-button-container">
+          <ion-button expand="block" color="success" (click)="createOperation()">
+            <ng-container *ngIf="!isCreatingOperation; else creatingLoader">
+              <span style="color: #fff;">Save</span>
             </ng-container>
-          </ion-grid>
-        </ng-container>
+            <ng-template #creatingLoader>
+              <ion-spinner name="dots"></ion-spinner>
+            </ng-template>
+          </ion-button>
+        </div>
       </ion-content>
     </ng-template>
   </ion-modal>
-  
-  <ion-modal [isOpen]="isCreateOperationDetailModalOpen" (didDismiss)="closeCreateOperationDetailModal()">
+
+  <ion-modal [isOpen]="isCreateFeeModalOpen" (didDismiss)="closeCreateFeeModal()">
     <ng-template>
       <ion-header>
         <ion-toolbar>
           <ion-buttons slot="start">
-            <ion-button (click)="closeCreateOperationDetailModal()">Cancel</ion-button>
+            <ion-button (click)="closeCreateFeeModal()">Cancel</ion-button>
           </ion-buttons>
-          <ion-title>Create Operation Detail</ion-title>
+          <ion-title>Add Fee</ion-title>
         </ion-toolbar>
       </ion-header>
       <ion-content>
-        <ion-grid>
-          <ion-row>
-            <ion-col>
-              <ion-card class="ion-no-margin">
-                <ion-card-header>
-                  <ion-card-title class="text-wrap">Cash</ion-card-title>
-                  <ion-card-subtitle>From</ion-card-subtitle>
-                </ion-card-header>
-              </ion-card>
-            </ion-col>
-            <ion-col>
-              <ion-card class="ion-no-margin">
-                <ion-card-header>
-                  <ion-card-title class="text-wrap">Food</ion-card-title>
-                  <ion-card-subtitle>To</ion-card-subtitle>
-                </ion-card-header>
-              </ion-card>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
-
         <ion-list>
           <ion-item>
-            <ion-input type="number" placeholder="Amount"></ion-input>
+            <ion-select label="Type" placeholder="Choose type" [(ngModel)]="newFee.type">
+              <ion-select-option [value]="TYPE_COMMISSION">{{ TYPE_COMMISSION }}</ion-select-option>
+              <ion-select-option [value]="TYPE_TAX">{{ TYPE_TAX }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-item>
+            <ion-select label="Operation Type" placeholder="Choose operation type" [(ngModel)]="newFee.operation">
+              <ion-select-option [value]="OPERATION_TYPE_INDUCT">{{ OPERATION_TYPE_INDUCT }}</ion-select-option>
+              <ion-select-option [value]="OPERATION_TYPE_DEDUCT">{{ OPERATION_TYPE_DEDUCT }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-item>
+            <ion-select label="Format" placeholder="Choose format" [(ngModel)]="newFee.format">
+              <ion-select-option [value]="FORMAT_PERCENT">{{ FORMAT_PERCENT }}</ion-select-option>
+              <ion-select-option [value]="FORMAT_AMOUNT">{{ FORMAT_AMOUNT }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-item>
+            <ion-input type="number" label="Amount" placeholder="Fill amount" [(ngModel)]="newFee.amount"></ion-input>
           </ion-item>
         </ion-list>
 
-        <ion-grid>
-          <ion-row>
-            <ion-col>
-              <ion-button expand="block" color="light">
-                <ion-icon name="chatbox-ellipses-outline"></ion-icon>
-              </ion-button>
-            </ion-col>
-            <ion-col>
-              <ion-button expand="block" color="light">
-                <ion-icon name="server-outline"></ion-icon>
-              </ion-button>
-            </ion-col>
-            <ion-col>
-              <ion-button expand="block" color="light">
-                <ion-icon name="cash-outline"></ion-icon>
-              </ion-button>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
-        
         <div class="ion-padding modal-button-container">
-          <ion-button expand="block" color="success">
-            <span style="color: #fff;">Save</span>
+          <ion-button expand="block" color="success" (click)="addFee()">
+            <span style="color: #fff;">Add Fee</span>
           </ion-button>
         </div>
       </ion-content>
     </ng-template>
   </ion-modal>
 </ion-content>
+
+<ion-footer>
+  <ion-fab vertical="bottom" horizontal="end">
+    <ion-fab-button (click)="openCreateOperationModal()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-footer>

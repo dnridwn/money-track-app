@@ -52,12 +52,6 @@
     </ion-grid>
   </ng-container>
 
-  <ion-fab vertical="bottom" horizontal="end">
-    <ion-fab-button (click)="openCreateAccountModal()">
-      <ion-icon name="add"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
-
   <ion-modal [isOpen]="isCreateAccountModalOpen" (didDismiss)="closeCreateAccountModal()">
     <ng-template>
       <ion-header>
@@ -154,3 +148,11 @@
     </ng-template>
   </ion-modal>
 </ion-content>
+
+<ion-footer>
+  <ion-fab vertical="bottom" horizontal="end">
+    <ion-fab-button (click)="openCreateAccountModal()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-footer>

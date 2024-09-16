@@ -24,10 +24,10 @@
         <ion-row>
           <ng-container *ngFor="let category of categories; let i = index">
             <ion-col size="6">
-              <ion-card class="ion-no-margin" [class]="{'ion-margin-start': i % 2 == 0, 'ion-margin-end': i % 2 == 1}" (click)="openEditCategoryModal(category)">
+              <ion-card class="ion-no-margin" [class]="{'ion-margin-start': i % 2 === 0, 'ion-margin-end': i % 2 === 1}" (click)="openEditCategoryModal(category)">
                 <ion-card-header>
                   <ion-card-title class="text-wrap">{{ category.name }}</ion-card-title>
-                  <ion-card-subtitle>0</ion-card-subtitle>
+                  <ion-card-subtitle>{{ category.total_transaction_amount_formatted }}</ion-card-subtitle>
                 </ion-card-header>
               </ion-card>
             </ion-col>
@@ -43,10 +43,10 @@
         <ion-row>
           <ng-container *ngFor="let category of categories; let i = index">
             <ion-col size="6">
-              <ion-card class="ion-no-margin" [class]="{'ion-margin-start': i % 2 == 0, 'ion-margin-end': i % 2 == 1}" (click)="openEditCategoryModal(category)">
+              <ion-card class="ion-no-margin" [class]="{'ion-margin-start': i % 2 === 0, 'ion-margin-end': i % 2 === 1}" (click)="openEditCategoryModal(category)">
                 <ion-card-header>
                   <ion-card-title class="text-wrap">{{ category.name }}</ion-card-title>
-                  <ion-card-subtitle>0</ion-card-subtitle>
+                  <ion-card-subtitle>{{ category.total_transaction_amount_formatted }}</ion-card-subtitle>
                 </ion-card-header>
               </ion-card>
             </ion-col>
@@ -55,12 +55,6 @@
       </ng-container>
     </ion-grid> 
   </ng-container>
-
-  <ion-fab vertical="bottom" horizontal="end">
-    <ion-fab-button (click)="openCreateCategoryModal()">
-      <ion-icon name="add"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
 
   <ion-modal [isOpen]="isCreateCategoryModalOpen" (didDismiss)="closeCreateCategoryModal()">
     <ng-template>
@@ -130,19 +124,19 @@
 
         <div class="ion-padding modal-button-container">
           <div class="flex w-100">
-            <ion-button class="flex-1" expand="block" color="success" (click)="editCategory(activeCategory)">
-              <ng-container *ngIf="!isEditingCategory; else creatingLoader">
-                <span style="color: #fff;">Save</span>
-              </ng-container>
-              <ng-template #creatingLoader>
-                <ion-spinner name="dots"></ion-spinner>
-              </ng-template>
-            </ion-button>
             <ion-button class="flex-1" expand="block" color="danger" (click)="deleteCategory(activeCategory)">
               <ng-container *ngIf="!isDeletingCategory; else editingLoader">
                 <span style="color: #fff;">Delete</span>
               </ng-container>
               <ng-template #editingLoader>
+                <ion-spinner name="dots"></ion-spinner>
+              </ng-template>
+            </ion-button>
+            <ion-button class="flex-1" expand="block" color="success" (click)="editCategory(activeCategory)">
+              <ng-container *ngIf="!isEditingCategory; else creatingLoader">
+                <span style="color: #fff;">Save</span>
+              </ng-container>
+              <ng-template #creatingLoader>
                 <ion-spinner name="dots"></ion-spinner>
               </ng-template>
             </ion-button>
@@ -152,3 +146,11 @@
     </ng-template>
   </ion-modal>
 </ion-content>
+
+<ion-footer>
+  <ion-fab vertical="bottom" horizontal="end">
+    <ion-fab-button (click)="openCreateCategoryModal()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-footer>

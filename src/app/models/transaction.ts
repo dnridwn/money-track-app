@@ -2,6 +2,10 @@ import { Account } from './account';
 import { Category } from './category';
 import { TransactionFee } from './transaction-fee';
 
+export const TYPE_DEBIT = "Debit";
+export const TYPE_CREDIT = "Credit";
+export const TYPE_TRANSFER = "Transfer";
+
 export interface Transaction {
     id: number|null,
     type: string|null,
