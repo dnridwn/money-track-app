@@ -114,7 +114,7 @@
             <ion-textarea label="Description" placeholder="type here..." [rows]="4" [(ngModel)]="activeAccount.description"></ion-textarea>
           </ion-item>
           <ion-item>
-            <ion-select label="Type" placeholder="Select" [(ngModel)]="activeAccount.type">
+            <ion-select label="Type" placeholder="Select" [(ngModel)]="activeAccount.type" disabled="true">
               <ion-select-option value="Account">Account</ion-select-option>
               <ion-select-option value="Debt">Debt</ion-select-option>
             </ion-select>
