@@ -126,17 +126,17 @@
 
         <div class="ion-padding modal-button-container">
           <div class="flex w-100">
-            <ion-button class="flex-1" expand="block" color="success" (click)="editAccount(activeAccount)">
-              <ng-container *ngIf="!isEditingAccount; else editingLoader">
-                <span style="color: #fff;">Save</span>
+            <ion-button class="flex-1" expand="block" color="danger" (click)="deleteAccount(activeAccount)">
+              <ng-container *ngIf="!isDeletingAccount; else editingLoader">
+                <span style="color: #fff;">Delete</span>
               </ng-container>
               <ng-template #editingLoader>
                 <ion-spinner name="dots"></ion-spinner>
               </ng-template>
             </ion-button>
-            <ion-button class="flex-1" expand="block" color="danger" (click)="deleteAccount(activeAccount)">
-              <ng-container *ngIf="!isDeletingAccount; else editingLoader">
-                <span style="color: #fff;">Delete</span>
+            <ion-button class="flex-1" expand="block" color="success" (click)="editAccount(activeAccount)">
+              <ng-container *ngIf="!isEditingAccount; else editingLoader">
+                <span style="color: #fff;">Save</span>
               </ng-container>
               <ng-template #editingLoader>
                 <ion-spinner name="dots"></ion-spinner>
