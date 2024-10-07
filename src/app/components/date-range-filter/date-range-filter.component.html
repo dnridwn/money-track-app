@@ -1,0 +1,127 @@
+<div style="display: flex">
+  <ion-button fill="clear" (click)="previousPeriod()">
+    <ion-icon name="chevron-back-outline"></ion-icon>
+  </ion-button>
+  <ion-button fill="clear" style="flex: 1;" (click)="openModal()">
+    {{ filterText }}
+  </ion-button>
+  <ion-button fill="clear" (click)="nextPeriod()">
+    <ion-icon name="chevron-forward-outline"></ion-icon>
+  </ion-button>
+</div>
+
+<ion-modal [isOpen]="isModalOpen" (didDismiss)="closeModal()" [initialBreakpoint]=".5" [breakpoints]="[0, .5]">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-button (click)="closeModal()">Cancel</ion-button>
+        </ion-buttons>
+        <ion-title>Jarak Waktu</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <ion-grid>
+        <ion-row>
+          <ion-col>
+            <ion-button fill="outline" expand="block" (click)="openDateRangePickerModal()">
+              Rentang Tanggal
+            </ion-button>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <ion-button fill="outline" expand="block" (click)="chooseFilter(ALL_TIME_FILTER)">
+              Sepanjang Waktu
+            </ion-button>
+          </ion-col>
+          <ion-col>
+            <ion-button fill="outline" expand="block" (click)="openDatePickerModal()">
+              Pilih Hari
+            </ion-button>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <ion-button fill="outline" expand="block" (click)="chooseFilter(WEEK_FILTER)">
+              Pekan Ini
+            </ion-button>
+          </ion-col>
+          <ion-col>
+            <ion-button fill="outline" expand="block" (click)="chooseFilter(TODAY_FILTER)">
+              Hari Ini
+            </ion-button>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <ion-button fill="outline" expand="block" (click)="chooseFilter(YEAR_FILTER)">
+              Tahun Ini
+            </ion-button>
+          </ion-col>
+          <ion-col>
+            <ion-button fill="outline" expand="block" (click)="chooseFilter(MONTH_FILTER)">
+              Bulan Ini
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<ion-modal [isOpen]="isDatePickerModalOpen" (didDismiss)="closeDatePickerModal()" [initialBreakpoint]=".5" [breakpoints]="[0, .5]" class="date-picker-modal">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-button (click)="closeDatePickerModal()">Cancel</ion-button>
+        </ion-buttons>
+        <ion-title>Pilih Hari</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <div style="padding: 16px;">
+        <ion-datetime size="cover" (ionChange)="confirmDatePicker($event.detail.value)"></ion-datetime>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<ion-modal [isOpen]="isDateRangePickerModalOpen" (didDismiss)="closeDateRangePickerModal()" [initialBreakpoint]=".25" [breakpoints]="[0, .25]" class="date-picker-modal">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-button (click)="closeDateRangePickerModal()">Cancel</ion-button>
+        </ion-buttons>
+        <ion-title>Pilih Rentang Tanggal</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="confirmDateRangePicker()">Confirm</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <ion-list>
+        <ion-item>
+          <ion-label>Start Date</ion-label>
+          <ion-datetime-button datetime="start-date"></ion-datetime-button>
+          <ion-popover [keepContentsMounted]="true">
+            <ng-template>
+              <ion-datetime id="start-date" presentation="date" [(ngModel)]="dateRangeDates[0]"></ion-datetime>
+            </ng-template>
+          </ion-popover>
+        </ion-item>
+        <ion-item>
+          <ion-label>End Date</ion-label>
+          <ion-datetime-button datetime="end-date"></ion-datetime-button>
+          <ion-popover [keepContentsMounted]="true">
+            <ng-template>
+              <ion-datetime id="end-date" presentation="date" [(ngModel)]="dateRangeDates[1]"></ion-datetime>
+            </ng-template>
+          </ion-popover>
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ng-template>
+</ion-modal>

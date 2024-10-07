@@ -73,8 +73,8 @@ export class OperationPage implements OnInit {
     this.closeCreateFeeModal();
   }
 
-  fetchTransactions() {
-    this.transactionService.fetchAll()
+  fetchTransactions(start_date: string = '', end_date: string = '') {
+    this.transactionService.fetchAll({ start_date, end_date })
       .pipe(
         catchError(async (error: any) => {
           (await this.toastCtrl.create({ color: "danger", duration: 3000, message: error?.error?.message || "Something went wrong. Please try again later!" })).present();
@@ -139,8 +139,11 @@ export class OperationPage implements OnInit {
     this.newTransaction.fees = [];
   }
 
+  dateFilterChanged(value: string[]) {
+    this.fetchTransactions(value[0], value[1]);
+  }
+
   ngOnInit() {
-    this.fetchTransactions();
     this.fetchAccounts();
     this.fetchCategories(TYPE_INCOME);
     this.fetchCategories(TYPE_EXPENSE);

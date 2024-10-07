@@ -7,13 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { OperationPageRoutingModule } from './operation-routing.module';
 
 import { OperationPage } from './operation.page';
+import { ComponentsModule } from 'src/app/components/components.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    OperationPageRoutingModule
+    OperationPageRoutingModule,
+    ComponentsModule
   ],
   declarations: [OperationPage]
 })

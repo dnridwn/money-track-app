@@ -10,6 +10,8 @@
     </ion-toolbar>
   </ion-header>
 
+  <app-date-range-filter (filterChanged)="dateFilterChanged($event)"></app-date-range-filter>
+
   <ion-list>
     <ng-container *ngFor="let transaction of transactions">
       <ion-item>
